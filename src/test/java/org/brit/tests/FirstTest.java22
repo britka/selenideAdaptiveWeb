@@ -1,0 +1,56 @@
+package org.brit.tests;
+
+import com.codeborne.selenide.Configuration;
+import org.brit.application.Product;
+import org.brit.pages.web.BasePage;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.annotations.Test;
+
+import java.util.HashMap;
+import java.util.List;
+
+import static com.codeborne.selenide.Selenide.open;
+
+public class FirstTest {
+    @Test
+    public void test() {
+        ChromeOptions browser = new ChromeOptions();
+        //  System.setProperty("chromeoptions.mobileEmulation", "deviceName=Nexus 5");
+        browser.setCapability("selenoid:options", new HashMap<String, Object>() {{
+//            put("mobileDevice", new HashMap<String, Object>() {{
+//                put("deviceName", "Apple iPhone 11");
+//                put("orientation", "landscape");
+//            }});
+            put("enableVNc", true);
+            put("enableVideo", true);
+        }});
+        browser.setExperimentalOption("mobileEmulation", new HashMap<>() {{
+            put("deviceName", "Nexus 5");
+        }});
+        Configuration.browserCapabilities = browser;
+        Configuration.headless = false;
+        //  Configuration.remote = "http://localhost:4444/wd/hub";
+
+
+//        IApplication application = new ApplicationWebImpl();
+//        List<Product> productList = application
+//                .goToApp()
+//                .login("sbrit@provectus.com", "dgdfgsdrfwer23$@#sdweq")
+//                .getNavigationMenu()
+//                .chooseCategoryAndSubcategory("Computers", "Notebooks")
+//                .getProductList();
+//        System.out.println(productList);
+
+
+        System.setProperty("whereToRun", "mobileWeb");
+        open("http://82.196.8.130/");
+        List<Product> productsList = new BasePage()
+                .getMainMenu()
+                .goToLogin()
+                .login("sbrit@provectus.com", "dgdfgsdrfwer23$@#sdweq")
+                .getPageMenu()
+                .selectCategoryAndSubCategory("Computers", "Notebooks")
+                .getProductsList();
+        System.out.println(productsList);
+    }
+}
