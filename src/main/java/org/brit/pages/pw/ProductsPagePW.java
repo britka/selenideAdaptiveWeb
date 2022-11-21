@@ -5,6 +5,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
+import io.qameta.allure.Step;
 import org.brit.application.Product;
 import org.brit.driver.PlayWrightDriver;
 
@@ -15,6 +16,7 @@ public class ProductsPagePW extends BasePagePW {
 
     Page page = PlayWrightDriver.getInstance().getCurrentPage();
 
+    @Step
     public List<Product> getProductsList() {
         List<Product> list = new ArrayList<>();
 
@@ -32,11 +34,6 @@ public class ProductsPagePW extends BasePagePW {
 
     public ProductsPagePW addProductToCart(String productName) {
         page.waitForLoadState(LoadState.DOMCONTENTLOADED);
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
         Locator locator = page.locator(".product-item .product-title a", new Page.LocatorOptions().setHasText(productName))
                 .locator("xpath=./../..")
                 .locator(".button-2.product-box-add-to-cart-button");
@@ -44,5 +41,12 @@ public class ProductsPagePW extends BasePagePW {
         page.locator(".bar-notification.success").waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         page.locator(".bar-notification.success span").click();
         return this;
+    }
+
+    @Step
+    public ProductPagePW selectProduct(String productName){
+        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+        page.locator(".product-item .product-title a", new Page.LocatorOptions().setHasText(productName)).click();
+        return new ProductPagePW();
     }
 }

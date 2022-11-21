@@ -16,8 +16,7 @@ public class PageMenuWebPW implements IPageMenuPW {
 
     @Override
     public MainCategoryPagePW selectMainCategory(String categoryName) {
-        page.locator(".top-menu>li>a")
-                .filter(new Locator.FilterOptions().setHasText(categoryName))
+        page.locator(".notmobile.top-menu>li>a", new Page.LocatorOptions().setHasText(categoryName))
                 .click();
         return new MainCategoryPagePW();
     }
@@ -25,7 +24,7 @@ public class PageMenuWebPW implements IPageMenuPW {
     @Override
     public ProductsPagePW selectCategoryAndSubCategory(String category, String subCategory) {
         Locator filter = page
-                .locator(".top-menu>li>a", new Page.LocatorOptions().setHasText(category)).first();
+                .locator(".notmobile.top-menu>li>a", new Page.LocatorOptions().setHasText(category)).first();
         filter.hover();
         filter
                 .locator("xpath=./..")

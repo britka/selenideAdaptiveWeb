@@ -9,7 +9,7 @@ import org.brit.pages.web.ProductsPage;
 
 import static com.codeborne.selenide.Selenide.$$;
 
-public class MainCategoryPagePW extends BasePagePW {
+public class MainCategoryPagePW extends ProductsPagePW{
     Page page = PlayWrightDriver.getInstance().getCurrentPage();
 
     public ProductsPagePW selectSubCategory(String name) {

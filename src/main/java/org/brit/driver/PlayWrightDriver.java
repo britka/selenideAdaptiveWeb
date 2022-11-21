@@ -2,6 +2,8 @@ package org.brit.driver;
 
 import com.microsoft.playwright.*;
 
+import java.nio.file.Paths;
+
 public class PlayWrightDriver {
     private static PlayWrightDriver instance = null;
     ThreadLocal<BrowserContext> browserContextThreadLocal = new ThreadLocal<>();
@@ -24,23 +26,22 @@ public class PlayWrightDriver {
             switch (System.getProperty("whereToRun", "web")) {
                 case "web" -> browserContextThreadLocal
                         .set(
-                                getBrowser()
-                                        .launch(new BrowserType
-                                                .LaunchOptions()
-                                                .setHeadless(false)
-                                        )
-                                        .newContext());
+                                getPlayWright()
+                                        .chromium()
+//                                        .connect("ws://moon.aerokube.local/playwright/chromium/playwright-1.22.0?headless=false",
+//                                                new BrowserType.ConnectOptions().setTimeout(30000))
+                                        .launch(getLaunchOptions())
+                                        .newContext(new Browser.NewContextOptions().setAcceptDownloads(true)));
                 case "mobile" -> {
                     String mobileType = System.getProperty("mobileType", "Pixel 2");
                     browserContextThreadLocal.set(
                             getBrowser(DriverUtils.getMobileBrowser(mobileType))
-                                    .launch(new BrowserType
-                                            .LaunchOptions()
-                                            .setHeadless(false))
-                                    .newContext(DriverUtils.getMobileContext(mobileType).setLocale("en-US")));
+                                    .launch(getLaunchOptions())
+                                    .newContext(DriverUtils.getMobileContext(mobileType).setLocale("en-US").setAcceptDownloads(true)));
                 }
             }
         }
+        browserContextThreadLocal.get().setDefaultTimeout(60000);
         return browserContextThreadLocal.get();
     }
 
@@ -51,15 +52,15 @@ public class PlayWrightDriver {
 
     private BrowserType getBrowser(String launchBrowser) {
 
-                switch (launchBrowser) {
-                    case "firefox":
-                        return getPlayWright().firefox();
-                    case "webkit":
-                        return getPlayWright().webkit();
-                    case "chrome":
-                    default:
-                        return getPlayWright().chromium();
-                }
+        switch (launchBrowser) {
+            case "firefox":
+                return getPlayWright().firefox();
+            case "webkit":
+                return getPlayWright().webkit();
+            case "chrome":
+            default:
+                return getPlayWright().chromium();
+        }
     }
 
 
@@ -75,6 +76,15 @@ public class PlayWrightDriver {
             playwrightThreadLocal.set(Playwright.create());
         }
         return playwrightThreadLocal.get();
+    }
+
+    private BrowserType.LaunchOptions getLaunchOptions() {
+        return new BrowserType
+                .LaunchOptions()
+                .setHeadless(false)
+                .setDownloadsPath(Paths.get("downloads"))
+                .setTimeout(60000);
+                //.setSlowMo(700);
     }
 
 }
